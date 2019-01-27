@@ -40,9 +40,9 @@ if __name__ == '__main__':
 
     # b.
     data = imdb.request("genre/movie/list", language="en-US")
-    print(data)
+    # print(data)
     drama_id = filter(lambda genre: genre["name"] == "Drama", data["genres"]).__next__()['id']
-    print(drama_id)
+    # print(drama_id)
 
     page = 0
     movie_limit = 350
@@ -64,15 +64,19 @@ if __name__ == '__main__':
     for movie in movies[:movie_limit]:
         similar_list = imdb.request("movie/{}/similar".format(movie["id"]))
         filtered_dict = {}
-        for similar_movie in similar_list["results"][:similar_limit]:
-            if similar_movie['id'] in similar:
-                if movie['id'] in similar[similar_movie['id']]:
-                    print("movie filtered: {}".format(similar_movie))
-                    continue
-            filtered_dict[similar_movie['id']] = similar_movie
-        print(len(similar))
-        if movie["id"] in similar:
-            print("Movie {} already in similar dict".format(movie["title"]))
+        try:
+            for similar_movie in similar_list["results"][:similar_limit]:
+                if similar_movie['id'] in similar:
+                    if movie['id'] in similar[similar_movie['id']]:
+                        # print("movie filtered: {}".format(similar_movie))
+                        continue
+                filtered_dict[similar_movie['id']] = similar_movie
+        except KeyError as e:
+            print(similar_list)
+            raise e
+        # print(len(similar))
+        # if movie["id"] in similar:
+        #     print("Movie {} already in similar dict".format(movie["title"]))
         similar[movie["id"]] = filtered_dict
     print(len(similar))
 
