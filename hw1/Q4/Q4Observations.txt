@@ -1,0 +1,12 @@
+c.i.a
+47
+c.i.b
+5
+c.ii
+566
+c.iii
+if(isNull(value), "Unbranded", toString(value))
+c.iv
+floor(min(toNumber(value), 100) / 100)
+c.v
+if(or(contains(value,"discount"),contains(value,"offer"),contains(value,"sale")), 1, 0)
