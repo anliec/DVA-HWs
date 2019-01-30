@@ -85,8 +85,18 @@ if __name__ == '__main__':
             for similar_movie_id in v.keys():
                 file.write("{},{}\n".format(k, similar_movie_id))
 
-
-
+    # with open("movies_labels.csv", 'w') as file:
+    #     file.write("Id,Label\n")
+    #     written_movies = {}
+    #     for k, v in similar.items():
+    #         for similar_movie_id, info in v.items():
+    #             if similar_movie_id not in written_movies:
+    #                 written_movies[similar_movie_id] = info
+    #                 file.write("{},{}\n".format(similar_movie_id, info['title']))
+    #     for movie in movies[:movie_limit]:
+    #         if movie['id'] not in written_movies:
+    #             written_movies[movie['id']] = movie
+    #             file.write("{},{}\n".format(movie['id'], movie['title']))
 
 
 
