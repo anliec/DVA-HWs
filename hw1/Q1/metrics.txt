@@ -1,0 +1,3 @@
+Average Degree: 1.674 -> average connection (number of node over number of edges)
+Diameter of the graph: 8 -> max number of node you need to cross to go from one node to the other.
+Average path length: 2.471 -> average number of node you need to cross to go from one node to the other.

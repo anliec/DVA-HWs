@@ -1,0 +1,3 @@
+I chose blue shade of color because engineer like blue. The size of the node depend of there degree (in and out) so
+the most connection they have the bigger they appear, as you would expect. The size of the label also follow this same
+logic.
