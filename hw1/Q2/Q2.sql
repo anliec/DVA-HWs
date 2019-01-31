@@ -62,7 +62,7 @@ CREATE INDEX IF NOT EXISTS movie_index ON movies (id);
 
 -- [insert your SQL statement(s) BELOW this line]
 
-SELECT AVG(s) as prop
+SELECT AVG(s) * 100 as prop
 FROM (SELECT 1 as s FROM movies WHERE score > 50 UNION ALL
       SELECT 0 as s FROM movies WHERE score <= 50);
 

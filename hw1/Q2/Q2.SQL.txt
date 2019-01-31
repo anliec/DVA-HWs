@@ -47,7 +47,7 @@ SELECT COUNT(*) FROM movie_cast;
 -- [insert your SQL statement(s) BELOW this line]
 
 CREATE INDEX IF NOT EXISTS scores_index ON movies (score);
-CREATE INDEX IF NOT EXISTS cast_index ON movies_cast (cast_id);
+CREATE INDEX IF NOT EXISTS cast_index ON movie_cast (cast_id);
 CREATE INDEX IF NOT EXISTS movie_index ON movies (id);
 
 -- [insert your SQL statement(s) ABOVE this line]
@@ -62,7 +62,7 @@ CREATE INDEX IF NOT EXISTS movie_index ON movies (id);
 
 -- [insert your SQL statement(s) BELOW this line]
 
-SELECT AVG(s) as prop
+SELECT AVG(s) * 100 as prop
 FROM (SELECT 1 as s FROM movies WHERE score > 50 UNION ALL
       SELECT 0 as s FROM movies WHERE score <= 50);
 
@@ -92,7 +92,7 @@ SELECT * FROM movies ORDER BY score DESC, name ASC LIMIT 7;
 -- [insert your SQL statement(s) BELOW this line]
 
 SELECT cast_id, cast_name, COUNT(movie_id) as movie_count
-FROM movies_cast
+FROM movie_cast
 GROUP BY cast_id
 ORDER BY movie_count DESC, cast_name ASC
 LIMIT 5;
@@ -109,8 +109,8 @@ LIMIT 5;
 -- [insert your SQL statement(s) BELOW this line]
 
 SELECT cast_id, cast_name, AVG(m.score) average_score
-FROM movies_cast as c INNER JOIN movies as m ON c.movie_id = m.id
-WHERE m.score > 50
+FROM movie_cast as c INNER JOIN movies as m ON c.movie_id = m.id
+WHERE m.score >= 50
 GROUP BY c.cast_id
 HAVING COUNT(c.movie_id) > 2
 ORDER BY average_score DESC, c.cast_name ASC
@@ -129,16 +129,16 @@ LIMIT 10;
 
 CREATE VIEW good_collaboration AS
 SELECT c1.cast_id as cast_member_id1, c2.cast_id as cast_member_id2, COUNT(m.id) as movie_count, AVG(m.score) as average_movie_score
-FROM movies_cast as c1
+FROM movie_cast as c1
      INNER JOIN
-     movies_cast as c2
+     movie_cast as c2
      ON c1.movie_id = m.id
      INNER JOIN
      movies as m
      ON c2.movie_id = m.id
 WHERE c1.cast_id < c2.cast_id
 GROUP BY c1.cast_id, c2.cast_id
-HAVING movie_count > 3 and average_movie_score >= 40;
+HAVING movie_count >= 3 and average_movie_score >= 40;
 
 -- [insert your SQL statement(s) ABOVE this line]
 
@@ -160,7 +160,7 @@ FROM (SELECT cast_member_id1 as id, movie_count, average_movie_score FROM good_c
       UNION ALL
       SELECT cast_member_id2 as id, movie_count, average_movie_score FROM good_collaboration) as u
      INNER JOIN
-     movies_cast as c
+     movie_cast as c
      ON c.cast_id = u.id
 GROUP BY u.id
 ORDER BY collaboration_score DESC, cast_name ASC
