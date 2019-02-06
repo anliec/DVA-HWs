@@ -1,0 +1,18 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww10060\viewh6980\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+Q3A)\
+The Feature 2 (plasma glucose) vs. Feature 5 (Insulin) combination is better at separating the classes, as is clearly visible from the scatterplot. A linear classifier may also work well to a certain extent.\
+The bmi vs blood pressure scatterplot, results in points that overlap making it harder to separate them into 2 different classes.\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 \
+
+\f0 Q3C)\
+For data that ranges over several magnitudes, a better visualization can be seen using a non linear transformation. It is seen that the log and sqrt scale transformations cause points to be distributed more uniformly through the graph, resulting in better visualization}
