@@ -5809,5 +5809,15 @@
         "to": "Listing for OOSKY"
       }
     ]
+  },
+  {
+    "op": "core/column-removal",
+    "description": "Remove column category_name 4",
+    "columnName": "category_name 4"
+  },
+  {
+    "op": "core/column-removal",
+    "description": "Remove column category_name 5",
+    "columnName": "category_name 5"
   }
 ]

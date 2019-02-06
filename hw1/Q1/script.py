@@ -11,6 +11,7 @@ class IMDBRequest:
         self.api_key = api_key
         self.last_request_time = None
         self.request_max_time = 1/3  # in sec
+        self.bad_request_timeout = 10  # in sec
         self.api_url = "api.themoviedb.org"
         self.base_url = "/3/"
         print("connect")
@@ -25,9 +26,15 @@ class IMDBRequest:
         kwargs["api_key"] = self.api_key
         url = self.base_url + mode + "?" + '&'.join(["{}={}".format(k, v) for k, v in kwargs.items()])
         # print(url)
-        self.con.request('GET', url)
-        response = self.con.getresponse().read()
-        return json.loads(response, encoding="utf-8")
+        while True:
+            self.con.request('GET', url)
+            response = self.con.getresponse().read()
+            json_response = json.loads(response, encoding="utf-8")
+            if 'status_code' in json_response and json_response['status_code'] == 25:
+                print("Time out get, waiting for 10 sec")
+                time.sleep(self.bad_request_timeout)
+                continue
+            return json_response
 
 
 if __name__ == '__main__':
@@ -40,9 +47,7 @@ if __name__ == '__main__':
 
     # b.
     data = imdb.request("genre/movie/list", language="en-US")
-    # print(data)
     drama_id = filter(lambda genre: genre["name"] == "Drama", data["genres"]).__next__()['id']
-    # print(drama_id)
 
     page = 0
     movie_limit = 350
@@ -53,10 +58,14 @@ if __name__ == '__main__':
             drama_list = imdb.request("discover/movie", page=page,
                                       **{"with_genres": drama_id, "primary_release_date.gte": 2004,
                                          "sort_by": "popularity.desc"})
-            movies += drama_list['results']
-            for movie in drama_list['results']:
+            if len(movies) + len(drama_list['results']) > movie_limit:
+                movies_to_add = drama_list['results'][:movie_limit - len(movies)]
+            else:
+                movies_to_add = drama_list['results']
+            movies += movies_to_add
+            for movie in movies_to_add:
                 file.write("{},{}\n".format(movie['id'], movie['title']))
-    print(len(movies), movies)
+    print("{} drama movies found".format(len(movies)))
 
     # c.
     similar_limit = 5
@@ -66,22 +75,26 @@ if __name__ == '__main__':
         filtered_dict = {}
         try:
             for similar_movie in similar_list["results"][:similar_limit]:
-                if similar_movie['id'] in similar:
-                    if movie['id'] in similar[similar_movie['id']]:
-                        # print("movie filtered: {}".format(similar_movie))
-                        continue
                 filtered_dict[similar_movie['id']] = similar_movie
         except KeyError as e:
             print(similar_list)
             raise e
-        # print(len(similar))
-        # if movie["id"] in similar:
-        #     print("Movie {} already in similar dict".format(movie["title"]))
         similar[movie["id"]] = filtered_dict
     print(len(similar))
 
+    # filter out double
+    filtered_similar = collections.defaultdict(dict)
+    for movie_id, similar_dict in similar.items():
+        for similar_movie_id, similar_movie_info in similar_dict.items():
+            if movie_id > similar_movie_id:
+                if similar_movie_id in similar and movie_id in similar[similar_movie_id]:
+                    # filter this one
+                    continue
+            filtered_similar[movie_id][similar_movie_id] = similar_movie_info
+    print(len(filtered_similar))
+
     with open("movie_ID_sim_movie_ID.csv", 'w') as file:
-        for k, v in similar.items():
+        for k, v in filtered_similar.items():
             for similar_movie_id in v.keys():
                 file.write("{},{}\n".format(k, similar_movie_id))
 
