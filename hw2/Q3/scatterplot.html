@@ -34,8 +34,8 @@
 <script type="text/javascript">
 
     //basic parameters: height, width, padding and color
-    var w = 1000;
-    var h = 500;
+    var w = 1200;
+    var h = 700;
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = w - margin.left - margin.right,
@@ -59,16 +59,38 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    function q3Graph(svg, title, getValueX, getValueY, getValueS, nameX, nameY, data){
+    var graph4 = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var graph5 = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    function q3Graph(svg, title, getValueX, getValueY, getValueS, nameX, nameY, data, yScale){
         var x = d3.scaleLinear()
             .range([0, width]);
 
-        var y = d3.scaleLinear()
+        var y = yScale()
             .range([height, 0]);
 
         // Compute the scales’ domains.
         x.domain(d3.extent(data, getValueX)).nice();
-        y.domain(d3.extent(data, getValueY)).nice();
+        if(yScale === d3.scaleLog){
+            var extent = d3.extent(data, getValueY);
+            if(extent[0] < 1){
+                extent[0] = 1;
+            }
+            y.domain(extent).nice();
+        }
+        else{
+            y.domain(d3.extent(data, getValueY)).nice();
+        }
+
 
         // Add the x-axis.
         svg.append("g")
@@ -119,13 +141,20 @@
             .attr("r", getValueS)
             .attr("d", function (d) {
                 if(d.is_good_rating === 1){
-                    return d3.symbol().type(d3.symbolCross)(d);
+                    return d3.symbol().type(d3.symbolCross).size(getValueS(d))(d);
                 }
                 else{
-                    return d3.symbol().type(d3.symbolCircle)(d);
+                    return d3.symbol().type(d3.symbolCircle).size(getValueS(d))(d);
                 }
             })
-            .attr("fill", "none")
+            .attr("fill", function (d) {
+                if(d.is_good_rating === 1){
+                    return "rgba(0,0,255,0.1)";
+                }
+                else{
+                    return "rgba(255,0,0,0.1)";
+                }
+            })
             .attr("stroke", function (d) {
                 if(d.is_good_rating === 1){
                     return "blue";
@@ -134,10 +163,12 @@
                     return "red";
                 }
             })
-    //         .attr("cx", d => x(getValueX(d)))
-    // .attr("cy", d => y(getValueY(d)));
             .attr("transform", function (d) {
-                return "translate(" + x(getValueX(d)) + "," + y(getValueY(d)) + ")";
+                var yv = y(getValueY(d));
+                if(yv > height){
+                    yv = height
+                }
+                return "translate(" + x(getValueX(d)) + "," + yv + ")";
             });
 
         // Add axis names
@@ -189,26 +220,40 @@
             }, function (d) {
                 return d.budget;
             }, function (d) {
-                return 4;
-            }, "Rating", "Budget", data);
+                return 40;
+            }, "Rating", "Budget", data, d3.scaleLinear);
 
             q3Graph(graph1, "Wins+Nominations vs. Rating", function (d) {
                 return d.rating;
             }, function (d) {
                 return d.wins_nom;
             }, function (d) {
-                return 4;
-            }, "Rating", "Wins+Nominations", data);
-
-
+                return 40;
+            }, "Rating", "Wins+Nominations", data, d3.scaleLinear);
 
             q3Graph(graph3, "Votes vs. Rating sized by Wins+Nominations", function (d) {
                 return d.rating;
             }, function (d) {
                 return d.votes;
             }, function (d) {
+                return 20 + d.wins_nom ;
+            }, "Rating", "Votes", data, d3.scaleLinear);
+
+            q3Graph(graph4, "Wins+Nominations (square-root-scaled) vs. Rating", function (d) {
+                return d.rating;
+            }, function (d) {
                 return d.wins_nom;
-            }, "Rating", "Votes", data);
+            }, function (d) {
+                return 40;
+            }, "Rating", "Wins+Nominations", data, d3.scaleSqrt);
+
+            q3Graph(graph5, "Wins+Nominations (log-scaled) vs. Rating", function (d) {
+                return d.rating;
+            }, function (d) {
+                return d.wins_nom;
+            }, function (d) {
+                return 40;
+            }, "Rating", "Wins+Nominations", data, d3.scaleLog);
 
         });
 
