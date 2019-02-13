@@ -3,12 +3,16 @@
 <html>
 <head>
     <style>
-        body{
+        body {
             background-color: #222222;
         }
 
+        h1 {
+            color: #eee;
+        }
+
         rect.bordered {
-            stroke: #E6E6E6;
+            stroke: #444444;
             stroke-width: 2px;
         }
 
@@ -31,17 +35,17 @@
     <!--<script src="http://d3js.org/d3.v4.js"></script>-->
 </head>
 <body>
+<h1 id="graph-title">Visualizing Crimes in New York City</h1>
+<div id="dataset-picker"></div>
 <div id="chart"></div>
-<div id="dataset-picker">
-</div>
 <script type="text/javascript">
-    const margin = {top: 20, right: 20, bottom: 10, left: 100},
-        width = 800 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom,
+    const margin = {top: 20, right: 100, bottom: 150, left: 100},
+        width = 1000 - margin.left - margin.right,
         gridSize = Math.floor(width / 6),
+        height = gridSize * 5, //800 - margin.top - margin.bottom,
         buckets = 9,
         legendElementWidth = width / buckets,
-        colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
+        colors = ['#1a9850', '#66bd63', '#a6d96a', '#d9ef8b', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d73027'], // alternatively colorbrewer.YlGnBu[9]
         borough = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
 
     const svg = d3.select("#chart").append("svg")
@@ -53,13 +57,14 @@
     yearsDict = {};
     crimeTypeToId = {};
     crimeIdToType = {};
+    crimeIdToMapX = {};
     d3.csv("heatmap.csv")
         .then(function (data) {
             data.forEach(function (d) {
                 if (!(d.Year in yearsDict)) {
                     yearsDict[d.Year] = [];
                 }
-                if(!(d["Crime Type"] in crimeTypeToId)){
+                if (!(d["Crime Type"] in crimeTypeToId)) {
                     crimeIdToType[Object.keys(crimeTypeToId).length] = d["Crime Type"];
                     crimeTypeToId[d["Crime Type"]] = Object.keys(crimeTypeToId).length;
                 }
@@ -70,7 +75,10 @@
                 yearsDict[d.Year].push({"borough": 3, "crime_id": crime_id, "crime": +d.Queens});
                 yearsDict[d.Year].push({"borough": 4, "crime_id": crime_id, "crime": +d["Staten Island"]});
             });
-            const crimes = Object.keys(crimeTypeToId);
+            const crimes = Object.keys(crimeTypeToId).sort();
+            for(var i = 0 ; i < crimes.length ; i++){
+                crimeIdToMapX[crimeTypeToId[crimes[i]]] = i;
+            }
 
             const boroughLabels = svg.selectAll(".boroughLabel")
                 .data(borough)
@@ -81,8 +89,17 @@
                 .attr("x", 0)
                 .attr("y", (d, i) => i * gridSize)
                 .style("text-anchor", "end")
-                .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+                .attr("transform", "translate(-6," + gridSize / 2 + ")")
                 .attr("class", (d, i) => ((i >= 0 && i <= 4) ? "boroughLabel mono axis axis-workweek" : "boroughLabel mono axis"));
+
+            svg.append("g")
+                .append("text")
+                .attr("x", -6)
+                .attr("y", margin.top + height - 20)
+                .style("font-weight", "bold")
+                .style("text-anchor", "end")
+                .style("fill", "#ccc")
+                .text("Borough");
 
             const crimeLabels = svg.selectAll(".crimeLabel")
                 .data(crimes)
@@ -94,25 +111,34 @@
                 .attr("transform", "translate(" + gridSize / 2 + ", -6)")
                 .attr("class", (d, i) => ((i >= 7 && i <= 16) ? "crimeLabel mono axis axis-crime" : "timeLabel mono axis"));
 
-            var maxPerYear = [];
-            for (let year in yearsDict) {
-                maxPerYear.push(d3.max(yearsDict[year], (d) => d.crime));
-            }
-            var maxCrime = Math.max.apply(Math, maxPerYear);
-            console.log(maxPerYear);
-            console.log(maxCrime);
+            svg.append("g")
+                .append("text")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("font-weight", "bold")
+                // .style("text-anchor", "end")
+                .style("fill", "#ccc")
+                .text("Crime Type");
 
-            colorScale = d3.scaleQuantile()
-                .domain([0, buckets - 1, maxCrime])
-                .range(colors);
+            // var maxPerYear = [];
+            // for (let year in yearsDict) {
+            //     maxPerYear.push(d3.max(yearsDict[year], (d) => d.crime));
+            // }
+            // maxCrime = Math.max.apply(Math, maxPerYear);
+            // console.log(maxPerYear);
+            // console.log(maxCrime);
 
             update_graph_year(Object.keys(yearsDict)[0]);
 
             console.log(Object.keys(yearsDict));
             console.log(data);
 
-            var select = d3.select("body")
-                .append("div")
+            var select = d3.select("#dataset-picker");
+
+            document.getElementById("graph-title").style.marginLeft = Math.floor(margin.left + width / 2 - 320) + "px";
+            document.getElementById("dataset-picker").style.marginLeft = Math.floor(margin.left + width / 2 - 40) + "px";
+            document.getElementById("dataset-picker").style.marginBottom = Math.floor(gridSize / 3) + "px";
+            select.style("margin-left", width / 2)
                 .append("select")
                 .on("change", function (d) {
                     var value = d3.select(this).property("value");
@@ -121,9 +147,9 @@
                 .selectAll("option")
                 .data(Object.keys(yearsDict))
                 .enter()
-                    .append("option")
-                    .attr("value", (d) => d)
-                    .text((d) => d);
+                .append("option")
+                .attr("value", (d) => d)
+                .text((d) => d);
 
             // const datasetpicker = d3.select("#dataset-picker")
             //     .selectAll(".dataset-button")
@@ -132,10 +158,14 @@
             //     .enter().append("option")
             //     .attr("value", d)
             //     // .on("click", (d) => update_graph_year(d));
-    });
+        });
 
     function update_graph_year(year) {
         const data = yearsDict[year];
+
+        const colorScale = d3.scaleQuantile()
+            .domain([0, buckets - 1, d3.max(data, (d) => d.crime)])
+            .range(colors);
 
         const cards = svg.selectAll(".hour")
             .data(data, (d) => d.borough + ':' + d.crime_id);
@@ -143,7 +173,7 @@
         cards.append("title");
 
         cards.enter().append("rect")
-            .attr("x", (d) => (d.crime_id) * gridSize)
+            .attr("x", (d) => (crimeIdToMapX[d.crime_id]) * gridSize)
             .attr("y", (d) => (d.borough) * gridSize)
             .attr("rx", 4)
             .attr("ry", 4)
@@ -168,7 +198,7 @@
 
         legend_g.append("rect")
             .attr("x", (d, i) => legendElementWidth * i)
-            .attr("y", height)
+            .attr("y", height + 40)
             .attr("width", legendElementWidth)
             .attr("height", gridSize / 2)
             .style("fill", (d, i) => colors[i]);
@@ -177,7 +207,7 @@
             .attr("class", "mono")
             .text((d) => "≥ " + Math.round(d))
             .attr("x", (d, i) => legendElementWidth * i)
-            .attr("y", height + gridSize / 2 + 15);
+            .attr("y", height + gridSize / 2 + 55);
 
         legend.exit().remove();
     }
