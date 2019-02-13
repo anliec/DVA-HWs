@@ -3,6 +3,10 @@
 <html>
 <head>
     <style>
+        body{
+            background-color: #222222;
+        }
+
         rect.bordered {
             stroke: #E6E6E6;
             stroke-width: 2px;
@@ -31,7 +35,7 @@
 <div id="dataset-picker">
 </div>
 <script type="text/javascript">
-    const margin = {top: 100, right: 100, bottom: 100, left: 100},
+    const margin = {top: 20, right: 20, bottom: 10, left: 100},
         width = 800 - margin.left - margin.right,
         height = 800 - margin.top - margin.bottom,
         gridSize = Math.floor(width / 6),
@@ -90,26 +94,44 @@
                 .attr("transform", "translate(" + gridSize / 2 + ", -6)")
                 .attr("class", (d, i) => ((i >= 7 && i <= 16) ? "crimeLabel mono axis axis-crime" : "timeLabel mono axis"));
 
+            var maxPerYear = [];
             for (let year in yearsDict) {
-
+                maxPerYear.push(d3.max(yearsDict[year], (d) => d.crime));
             }
+            var maxCrime = Math.max.apply(Math, maxPerYear);
+            console.log(maxPerYear);
+            console.log(maxCrime);
 
             colorScale = d3.scaleQuantile()
-                .domain([0, buckets - 1, d3.max(yearsDict, (y) => d3.max(y, (d) ))])
+                .domain([0, buckets - 1, maxCrime])
                 .range(colors);
 
             update_graph_year(Object.keys(yearsDict)[0]);
 
-            const datasetpicker = d3.select("#dataset-picker")
-                .selectAll(".dataset-button")
-                .data(Object.keys(yearsDict));
+            console.log(Object.keys(yearsDict));
+            console.log(data);
 
-            datasetpicker.enter()
-                .append("input")
-                .attr("value", (d) => "Dataset " + d)
-                .attr("type", "button")
-                .attr("class", "dataset-button")
-                .on("click", (d) => update_graph_year(d));
+            var select = d3.select("body")
+                .append("div")
+                .append("select")
+                .on("change", function (d) {
+                    var value = d3.select(this).property("value");
+                    update_graph_year(value);
+                })
+                .selectAll("option")
+                .data(Object.keys(yearsDict))
+                .enter()
+                    .append("option")
+                    .attr("value", (d) => d)
+                    .text((d) => d);
+
+            // const datasetpicker = d3.select("#dataset-picker")
+            //     .selectAll(".dataset-button")
+            //     .append("select").enter()
+            //     .data(Object.keys(yearsDict))
+            //     .enter().append("option")
+            //     .attr("value", d)
+            //     // .on("click", (d) => update_graph_year(d));
     });
 
     function update_graph_year(year) {
