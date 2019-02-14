@@ -42,7 +42,7 @@
 <body>
 <h1 id="graph-title">Visualizing Population in countries</h1>
 <div id="chart"></div>
-
+<div id="chart-evo"></div>
 <script type="text/javascript">
     data = [{
             country: 'Bangladesh',
@@ -70,6 +70,7 @@
             growth: {year_2013: 11862, year_2014: 7997, year_2015: 391, year_2016: -8820, year_2017: -17029}
         }];
 
+    var perCountryMap = new Map();
     data.forEach(function (d) {
         var yDict = new Map();
         yDict.set(2012, d.population_2012);
@@ -78,12 +79,20 @@
         yDict.set(2015, d.growth.year_2015 + yDict.get(2014));
         yDict.set(2016, d.growth.year_2016 + yDict.get(2015));
         yDict.set(2017, d.growth.year_2017 + yDict.get(2016));
+        var pop_growth_percent = new Map();
+        pop_growth_percent.set(2013, 100.0 * d.growth.year_2013 / yDict.get(2012));
+        pop_growth_percent.set(2014, 100.0 * d.growth.year_2014 / yDict.get(2013));
+        pop_growth_percent.set(2015, 100.0 * d.growth.year_2015 / yDict.get(2014));
+        pop_growth_percent.set(2016, 100.0 * d.growth.year_2016 / yDict.get(2015));
+        pop_growth_percent.set(2017, 100.0 * d.growth.year_2017 / yDict.get(2016));
         d.population = yDict;
+        d.pop_growth_percent = pop_growth_percent;
+        perCountryMap.set(d.country, d);
     });
 
     const margin = {top: 20, right: 100, bottom: 150, left: 100},
-        width = 1000 - margin.left - margin.right,
-        bar_height = 50,
+        width = 800 - margin.left - margin.right,
+        bar_height = 40,
         line_heights = 2 * bar_height,
         height = data.length * line_heights; //800 - margin.top - margin.bottom;
 
@@ -105,7 +114,18 @@
         .attr("x", 0)
         .attr("width", function(d) { return x(d.population.get(2017)); })
         .attr("y", function(d, i) { return Math.floor((i + 0.5) * line_heights - 0.5 * bar_height); })
-        .attr("height", bar_height);
+        .attr("height", bar_height)
+        .attr("country", function(d) { return d.country; })
+        .on('mouseover', function (d) {
+            var nodeSelection = d3.select(this).style("fill", "green");
+            console.log("in: "  + nodeSelection.attr("country"));
+            graph(nodeSelection.attr("country"))
+        })
+        .on('mouseout', function (d) {
+            var nodeSelection = d3.select(this).style("fill", "steelblue");
+            console.log("out: "  + nodeSelection.attr("country"));
+
+        });
 
     svg.selectAll("label")
         .data(data)
@@ -137,6 +157,126 @@
         .text(function (d) {
             return "" + d.country;
         });
+
+
+    var margin2 = {top: 20, right: 20, bottom: 30, left: 40},
+        width2 = 400 - margin.left - margin.right,
+        height2 = 400 - margin.top - margin.bottom;
+
+    var graph1 = d3.select("body").append("svg")
+        .attr("width", width2 + margin2.left + margin2.right)
+        .attr("height", height2 + margin2.top + margin2.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+    function graph(country){
+        let countryData = perCountryMap.get(country);
+        var nameX = "Year";
+        var nameY = "Pop growth (%)";
+
+        var x = d3.scaleLinear()
+            .range([0, width2]);
+
+        var y = d3.scaleLinear()
+            .range([height2, 0]);
+
+        // Compute the scales’ domains.
+        x.domain(d3.extent(Array.from(countryData.pop_growth_percent.keys())));
+        y.domain(d3.extent(Array.from(countryData.pop_growth_percent.values())));
+        console.log("y domain", Array.from(countryData.pop_growth_percent.values()));
+
+        // Add the x-axis.
+        graph1.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height2 + ")")
+            .call(d3.axisBottom(x));
+
+        // Add the y-axis.
+        graph1.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y));
+
+        // Add title
+        // graph1.append("text")
+        //     .attr("transform", "translate(" + (w / 2 - title.length * 5) + ", " + margin.top + ")")
+        //     .style("font-weight", "bold")
+        //     .text(title);
+
+        // Add legends
+        // graph1.append("path")
+        //     .attr("class", "point")
+        //     .attr("d", d3.symbol().type(d3.symbolCircle))
+        //     .attr("fill", "none")
+        //     .attr("stroke", "red")
+        //     .attr("transform", "translate(" + (2 * margin.left) + ","
+        //         + (margin.top * 3) + ")");
+        // graph1.append("text")
+        //     .attr("transform", "translate(" + (2 * margin.left + 10) + ","
+        //         + (margin.top * 3 + 4) + ")")
+        //     .text("Bad rating");
+        // graph1.append("path")
+        //     .attr("class", "point")
+        //     .attr("d", d3.symbol().type(d3.symbolCross))
+        //     .attr("fill", "none")
+        //     .attr("stroke", "blue")
+        //     .attr("transform", "translate(" + (2 * margin.left) + ","
+        //         + (margin.top * 3 + 20) + ")");
+        // graph1.append("text")
+        //     .attr("transform", "translate(" + (2 * margin.left + 10) + ","
+        //         + (margin.top * 3 + 24) + ")")
+        //     .text("Good rating");
+
+        // Add the points!
+        var line = d3.line()
+            .defined((k,v) => !isNaN(k[0]))
+            .x(function (k) {
+                console.log("x: ", x(k[0]), k[0]);
+                return x(k[0]);
+            })
+            .y(function (k) {
+                console.log("y: ", y(k[1]), k[1]);
+                return y(k[1]);
+            });
+
+        console.log(Array.from(countryData.pop_growth_percent.entries()));
+
+        graph1.append("path")
+            .datum(Array.from(countryData.pop_growth_percent.entries()))
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("d", line)
+            .attr("test", function (d) {
+                console.log("point: ", d);
+            });
+
+        // Add axis names
+        graph1.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (height2 + margin2.left) + ")")
+            .call(x)
+            .append("text")
+            .attr("x", width2 + margin2.left - 7 * nameX.length)
+            .attr("y", - 13)
+            .style("font-weight", "bold")
+            .style("text-anchor", "end")
+            .text(nameX);
+        graph1.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + margin2.left + ",0)")
+            .call(y)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("class", "label")
+            .attr("x", 0)
+            .attr("y", -35)
+            .attr("dy", ".71em")
+            .style("font-weight", "bold")
+            .style("text-anchor", "end")
+            .text(nameY);
+    }
 
 </script>
 
