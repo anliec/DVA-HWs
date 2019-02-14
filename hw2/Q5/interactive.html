@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            background-color: #222222;
+        }
+
+        h1 {
+            color: #eee;
+        }
+
+        rect.bordered {
+            stroke: #444444;
+            stroke-width: 2px;
+        }
+
+        text.mono {
+            font-size: 9pt;
+            font-family: Consolas, courier;
+            fill: #aaa;
+        }
+
+        text.mono-axis-title {
+            font-size: 12pt;
+            font-family: Consolas, courier;
+            fill: #ccc;
+        }
+
+        text.axis-borough {
+            fill: #000;
+        }
+
+        text.axis-crime {
+            fill: #000;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Q5</title>
+    <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+</head>
+<body>
+<h1 id="graph-title">Visualizing Population in countries</h1>
+<div id="chart"></div>
+
+<script type="text/javascript">
+    data = [{
+            country: 'Bangladesh',
+            population_2012: 105905297,
+            growth: {year_2013: 42488, year_2014: 934, year_2015: 52633, year_2016: 112822, year_2017: 160792}
+        },
+        {
+            country: 'Ethopia',
+            population_2012: 75656319,
+            growth: {year_2013: 1606010, year_2014: 1606705, year_2015: 1600666, year_2016: 1590077, year_2017: 1580805}
+        },
+        {
+            country: 'Kenya',
+            population_2012: 33007327,
+            growth: {year_2013: 705153, year_2014: 703994, year_2015: 699906, year_2016: 694295, year_2017: 687910}
+        },
+        {
+            country: 'Afghanistan',
+            population_2012: 23280573,
+            growth: {year_2013: 717151, year_2014: 706082, year_2015: 665025, year_2016: 616262, year_2017: 573643}
+        },
+        {
+            country: 'Morocco',
+            population_2012: 13619520,
+            growth: {year_2013: 11862, year_2014: 7997, year_2015: 391, year_2016: -8820, year_2017: -17029}
+        }];
+
+    data.forEach(function (d) {
+        var yDict = new Map();
+        yDict.set(2012, d.population_2012);
+        yDict.set(2013, d.growth.year_2013 + yDict.get(2012));
+        yDict.set(2014, d.growth.year_2014 + yDict.get(2013));
+        yDict.set(2015, d.growth.year_2015 + yDict.get(2014));
+        yDict.set(2016, d.growth.year_2016 + yDict.get(2015));
+        yDict.set(2017, d.growth.year_2017 + yDict.get(2016));
+        d.population = yDict;
+    });
+
+    const margin = {top: 20, right: 100, bottom: 150, left: 100},
+        width = 1000 - margin.left - margin.right,
+        bar_height = 50,
+        line_heights = 2 * bar_height,
+        height = data.length * line_heights; //800 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear().range([0, width]).domain([0, d3.max(data, d => d.population_2012)]);
+
+    var xAxis = d3.axisBottom()
+        .scale(x);
+
+    svg.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
+        .style("fill", "steelblue")
+        .attr("x", 0)
+        .attr("width", function(d) { return x(d.population.get(2017)); })
+        .attr("y", function(d, i) { return Math.floor((i + 0.5) * line_heights - 0.5 * bar_height); })
+        .attr("height", bar_height);
+
+    svg.selectAll("label")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "mono")
+        .attr("x", 6)
+        .attr("y", function(d, i) { return Math.floor((i + 0.5) * line_heights + 4); })
+        .text(function (d) {
+            let text = "" + d.population.get(2017);
+            let ret_text = "";
+            for(let i=text.length-1 ; i>=0 ; i--){
+                if(i > 0 && ((text.length-i) % 3) === 0){
+                    ret_text = "," + text[i] + ret_text;
+                }
+                else{
+                    ret_text = text[i] + ret_text;
+                }
+            }
+            return ret_text;
+        });
+
+    svg.selectAll("label")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "mono")
+        .style("text-anchor", "end")
+        .attr("x", -6)
+        .attr("y", function(d, i) { return Math.floor((i + 0.5) * line_heights + 4); })
+        .text(function (d) {
+            return "" + d.country;
+        });
+
+</script>
+
+</body>
+</html>
