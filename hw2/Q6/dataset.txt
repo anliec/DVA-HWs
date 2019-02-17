@@ -1,5 +1,0 @@
-{club:'Manchester United',value:{year_2013:3165, year_2014:2810, year_2015:3100, year_2016:3317, year_2017:4583}},
-{club:'Chelsea',value:{year_2013:901, year_2014:868, year_2015:1370, year_2016:1661, year_2017:1845}},
-{club:'Manchester City',value:{year_2013:689, year_2014:863, year_2015:1380, year_2016:1921, year_2017:2083}},
-{club:'Liverpool',value:{year_2013:651, year_2014:704, year_2015:982, year_2016:1548, year_2017:1492}},
-{club:'Arsenal',value:{year_2013:1326, year_2014:1331, year_2015:1310, year_2016:2017, year_2017:1932}}
