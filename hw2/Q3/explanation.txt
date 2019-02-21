@@ -1,5 +1,5 @@
 Q3.a.2
-rating vs budget is better at separating the classes because it allow more distances between the points at low rating
+Rating vs budget is better at separating the classes because it allow more distances between the points at low rating
 allowing to see how the two classes merge together at average rating.
 Q3.c
 Square root axis keep 0 which really help to understand visualization when 0 as a particular meaning.

@@ -71,7 +71,7 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    function q3Graph(svg, title, getValueX, getValueY, getValueS, nameX, nameY, data, yScale){
+    function q3Graph(svg, title, getValueX, getValueY, getValueS, nameX, nameY, data, yScale, yTickFormat){
         var x = d3.scaleLinear()
             .range([0, width]);
 
@@ -101,7 +101,7 @@
         // Add the y-axis.
         svg.append("g")
             .attr("class", "y axis")
-            .call(d3.axisLeft(y));
+            .call(d3.axisLeft(y).tickFormat(d3.format(".0s")));
 
         // Add title
         svg.append("text")
@@ -215,29 +215,29 @@
                 d.is_good_rating = +d.IsGoodRating;
             });
 
-            q3Graph(graph2, "Budget vs. Rating", function (d) {
-                return d.rating;
-            }, function (d) {
-                return d.budget;
-            }, function (d) {
-                return 40;
-            }, "Rating", "Budget", data, d3.scaleLinear);
-
             q3Graph(graph1, "Wins+Nominations vs. Rating", function (d) {
                 return d.rating;
             }, function (d) {
                 return d.wins_nom;
             }, function (d) {
                 return 40;
-            }, "Rating", "Wins+Nominations", data, d3.scaleLinear);
+            }, "Rating", "Wins+Nominations", data, d3.scaleLinear, d3.format("r"));
+
+            q3Graph(graph2, "Budget vs. Rating", function (d) {
+                return d.rating;
+            }, function (d) {
+                return +d.budget;
+            }, function (d) {
+                return 40;
+            }, "Rating", "Budget", data, d3.scaleLinear, d3.format("e"));
 
             q3Graph(graph3, "Votes vs. Rating sized by Wins+Nominations", function (d) {
                 return d.rating;
             }, function (d) {
-                return d.votes;
+                return +d.votes;
             }, function (d) {
                 return 20 + d.wins_nom ;
-            }, "Rating", "Votes", data, d3.scaleLinear);
+            }, "Rating", "Votes", data, d3.scaleLinear, d3.format("e"));
 
             q3Graph(graph4, "Wins+Nominations (square-root-scaled) vs. Rating", function (d) {
                 return d.rating;
@@ -245,7 +245,7 @@
                 return d.wins_nom;
             }, function (d) {
                 return 40;
-            }, "Rating", "Wins+Nominations", data, d3.scaleSqrt);
+            }, "Rating", "Wins+Nominations", data, d3.scaleSqrt, d3.format("r"));
 
             q3Graph(graph5, "Wins+Nominations (log-scaled) vs. Rating", function (d) {
                 return d.rating;
@@ -253,7 +253,7 @@
                 return d.wins_nom;
             }, function (d) {
                 return 40;
-            }, "Rating", "Wins+Nominations", data, d3.scaleLog);
+            }, "Rating", "Wins+Nominations", data, d3.scaleLog, d3.format("r"));
 
         });
 
