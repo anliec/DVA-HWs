@@ -1,23 +1,22 @@
 1. Ease to develop
-        GNUPLot: Sharp learning curve, but easy as long as you stay in what it can do.
-        Tableau: Mouse only way to produce nice looking graphs, easy to use after some learning time.
-        D3: Sharp learning curve, not the easiest to develop
+    GNUPLot: Sharp learning curve, but easy as long as you stay in what it can do.
+    Tableau: Mouse only way to produce nice looking graphs, easy to use after some learning time.
+    D3: Sharp learning curve, not the easiest to develop
 2. Ease to maintain the visualization (e.g., difficulty of the maintenance of the product as the requirements change,
 the data changes,  the hosting platform changes, etc.)
-        GNUPLot: Very resilient to platform change (lightweight and multiOSes) and easy to update on data side as in
-            plot.
-        Tableau: Possible for plot and data but require some care. Nearly unusable web interface making nearly
-            impossible to change platform.
-        D3: Easy to maintain provided that update don't broke compatibility. Only run on heavy modern web-browser.
+    GNUPLot: Very resilient to platform change (lightweight and multiOSes) and easy to update on data side as in plot.
+    Tableau: Possible for plot and data but require some care. Nearly unusable web interface making nearly impossible
+        to change platform.
+    D3: Easy to maintain provided that update don't broke compatibility. Only run on heavy modern web-browser.
 3. Usability of visualization developed for end users
-        GNUPLot: Very good provided the end user is a researcher.
-        Tableau: Very good provided the end user is a business oriented.
-        D3: Very good provided the end user is looking for nice looking animated graph on the web.
+    GNUPLot: Very good provided the end user is a researcher.
+    Tableau: Very good provided the end user is a business oriented.
+    D3: Very good provided the end user is looking for nice looking animated graph on the web.
 4. Scalability of visualization to “large” datasets
-        GNUPLot: Will run fine, but results may be unusable, pre-processing/adaptation may be needed.
-        Tableau: Will adapt or crash. Not designed for very large amount of data.
-        D3: Will be slower, but provided some pre-processing/adaptation may give good results.
+    GNUPLot: Will run fine, but results may be unusable, pre-processing/adaptation may be needed.
+    Tableau: Will adapt or crash. Not designed for very large amount of data.
+    D3: Will be slower, but provided some pre-processing/adaptation may give good results.
 5. System requirements to run the visualization (e.g., browsers, OS, software licensing) for end users
-        GNUPLot: Very good: multiOSes, GNUplot license (open source), no usage limitation from creators
-        Tableau: Poor: No proper MultiOSes support (web interface too limited), very restrictive licensing.
-        D3: Very good: require a powerful js interpreter but this exist on all platforms, BSD license (open source)
+    GNUPLot: Very good: multiOSes, GNUplot license (open source), no usage limitation from creators
+    Tableau: Poor: No proper MultiOSes support (web interface too limited), very restrictive licensing.
+    D3: Very good: require a powerful js interpreter but this exist on all platforms, BSD license (open source)
