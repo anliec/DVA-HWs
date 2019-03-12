@@ -24,9 +24,9 @@ public class Q4 {
             String line = value.toString();
             StringTokenizer itr = new StringTokenizer(line,"\t");
             node.set(itr.nextToken());
-            context.write(node, minusOne);
-            node.set(itr.nextToken());
             context.write(node, one);
+            node.set(itr.nextToken());
+            context.write(node, minusOne);
         }
     }
 
