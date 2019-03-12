@@ -1,0 +1,7 @@
+bigrams = LOAD 's3://cse6242-2019spring-trigrams-big/*' AS (bigram:chararray, year:int, count:double, books:double);
+E = FILTER bigrams BY count >= 400.0 AND books >= 15.0;
+A = GROUP E BY bigram;
+B = FOREACH A GENERATE group, SUM(E.count)/SUM(E.books) AS AVERAGE;
+C = ORDER B BY AVERAGE DESC, group ASC;
+D = LIMIT C 20;
+STORE D INTO 's3://cse6242oan-2019spring-nsix6/output-big/' USING PigStorage ('\t');
