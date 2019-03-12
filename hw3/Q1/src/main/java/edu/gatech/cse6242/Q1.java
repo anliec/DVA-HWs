@@ -28,7 +28,7 @@ public class Q1 {
         edge = itr.nextToken();
         if (edge != null){
             weight.set(Integer.parseInt(edge));
-            context.write(source, weight);
+            context.write(target, weight);
         }
     //weight.set(Integer.parseInt(itr.nextToken()));
     //context.write(source, weight);
