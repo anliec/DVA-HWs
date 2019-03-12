@@ -61,7 +61,7 @@ public class Q1 {
     Job job = Job.getInstance(conf, "Q1");
 
     /* TODO: Needs to be implemented */
-    job.setJarByClass(Task1.class);
+    job.setJarByClass(Q1.class);
     job.setMapperClass(TokenizerMapper.class);
     job.setCombinerClass(IntMaxReducer.class);
     job.setReducerClass(IntMaxReducer.class);
