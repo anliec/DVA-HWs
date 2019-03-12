@@ -101,7 +101,7 @@
         // Add the y-axis.
         svg.append("g")
             .attr("class", "y axis")
-            .call(d3.axisLeft(y).tickFormat(d3.format(".0s")));
+            .call(d3.axisLeft(y).tickFormat(d3.format("~s")));
 
         // Add title
         svg.append("text")
@@ -229,7 +229,7 @@
                 return +d.budget;
             }, function (d) {
                 return 40;
-            }, "Rating", "Budget", data, d3.scaleLinear, d3.format("e"));
+            }, "Rating", "Budget", data, d3.scaleLinear, d3.format("s"));
 
             q3Graph(graph3, "Votes vs. Rating sized by Wins+Nominations", function (d) {
                 return d.rating;
@@ -237,7 +237,7 @@
                 return +d.votes;
             }, function (d) {
                 return 20 + d.wins_nom ;
-            }, "Rating", "Votes", data, d3.scaleLinear, d3.format("e"));
+            }, "Rating", "Votes", data, d3.scaleLinear, d3.format("s"));
 
             q3Graph(graph4, "Wins+Nominations (square-root-scaled) vs. Rating", function (d) {
                 return d.rating;
