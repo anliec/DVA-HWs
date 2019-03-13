@@ -85,10 +85,7 @@ public class Q4 {
         job2.setOutputValueClass(IntWritable.class);
 
         int t = 0;
-        do {
-            t++;
-            File f = new File("tmp" + t);
-        }while (f.exists());
+        while (new File("tmp" + t).exists()) t++;
 
         FileInputFormat.setInputPaths(job1, new Path(args[0]));
         FileOutputFormat.setOutputPath(job1, new Path("tmp" + t));
