@@ -1,6 +1,7 @@
 package edu.gatech.cse6242;
 
 import java.util.StringTokenizer;
+import java.io.File;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.Configuration;
@@ -83,20 +84,17 @@ public class Q4 {
         job2.setOutputKeyClass(Text.class);
         job2.setOutputValueClass(IntWritable.class);
 
-        Path p = new Path("tmp");
         int t = 0;
-        while(true){
-            try{
-                FileInputFormat.setInputPaths(job1, new Path(args[0]));
-                FileOutputFormat.setOutputPath(job1, p);
-                FileInputFormat.setInputPaths(job2, p);
-                FileOutputFormat.setOutputPath(job2, new Path(args[1]));
-                System.exit(job1.waitForCompletion(true) ? (job2.waitForCompletion(true) ? 0 : 1) : 1);
-            }
-            catch (FileAlreadyExistsException e){
-                p = new Path("tmp" + t);
-                t++;
-            }
+        do {
+            t++;
+            File f = new File("tmp" + t);
+        }while (f.exists());
+
+        FileInputFormat.setInputPaths(job1, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job1, new Path("tmp" + t));
+        FileInputFormat.setInputPaths(job2, new Path("tmp" + t));
+        FileOutputFormat.setOutputPath(job2, new Path(args[1]));
+        System.exit(job1.waitForCompletion(true) ? (job2.waitForCompletion(true) ? 0 : 1) : 1);
         }
     }
 }
