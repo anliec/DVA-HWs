@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.util.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapred.FileAlreadyExistsException;
 
 import java.io.IOException;
 
@@ -82,10 +83,20 @@ public class Q4 {
         job2.setOutputKeyClass(Text.class);
         job2.setOutputValueClass(IntWritable.class);
 
-        FileInputFormat.addInputPath(job1, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job1, new Path("tmp"));
-        FileInputFormat.addInputPath(job2, new Path("tmp"));
-        FileOutputFormat.setOutputPath(job2, new Path(args[1]));
-        System.exit(job1.waitForCompletion(true) ? (job2.waitForCompletion(true) ? 0 : 1) : 1);
+        Path p = new Path("tmp");
+        int t = 0;
+        while(true){
+            try{
+                FileInputFormat.setInputPaths(job1, new Path(args[0]));
+                FileOutputFormat.setOutputPath(job1, p);
+                FileInputFormat.setInputPaths(job2, p);
+                FileOutputFormat.setOutputPath(job2, new Path(args[1]));
+                System.exit(job1.waitForCompletion(true) ? (job2.waitForCompletion(true) ? 0 : 1) : 1);
+            }
+            catch (FileAlreadyExistsException e){
+                p = new Path("tmp" + t);
+                t++;
+            }
+        }
     }
 }
