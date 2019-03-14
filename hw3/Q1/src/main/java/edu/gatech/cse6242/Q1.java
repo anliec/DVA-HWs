@@ -33,7 +33,7 @@ public class Q1 {
       }
     }
 
-    public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable>
+    public static class IntMaxReducer extends Reducer<Text, IntWritable, Text, IntWritable>
     {
         private IntWritable result = new IntWritable();
         //Reduce function
