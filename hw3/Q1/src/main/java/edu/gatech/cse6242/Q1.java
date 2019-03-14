@@ -30,28 +30,21 @@ public class Q1 {
             weight.set(Integer.parseInt(edge));
             context.write(target, weight);
         }
-    //weight.set(Integer.parseInt(itr.nextToken()));
-    //context.write(source, weight);
       }
     }
 
-    public static class IntMaxReducer extends Reducer<Text, IntWritable, Text, IntWritable>
+    public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable>
     {
         private IntWritable result = new IntWritable();
         //Reduce function
         public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
         {
-            int max = 0;
-            int next = 0;
+            int sum = 0;
             for(IntWritable val : values)//iterate all the elements in values
             {
-                next = val.get();
-                if(next >= max)
-                {
-                    max = next;
-                }
+                sum += val.get();
             }
-            result.set(max);
+            result.set(sum);
             context.write(key, result);
         }
     }
