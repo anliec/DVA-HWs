@@ -11,19 +11,15 @@ def entropy(class_y):
     #
     # Example:
     #    entropy([0,0,0,1,1,1,1,1,1]) = 0.92
+    try:
+        nb, na = np.bincount(class_y)
+    except ValueError:
+        return 0
 
-    na = 0
-    nb = 0
-    for i in class_y:
-        if i != 0:
-            na += 1
-        else:
-            nb += 1
-
-    proba = float(na) / float(na + nb)
-    probb = float(nb) / float(na + nb)
-    if proba != 0 and probb != 0:
-        entropy = (-1 * proba * np.log2(proba)) - (probb * np.log2(probb))
+    if na != 0 and nb != 0:
+        proba = float(na) / len(class_y)
+        probb = float(nb) / len(class_y)
+        entropy = -(proba * np.log2(proba)) - (probb * np.log2(probb))
     else:
         entropy = 0
     return entropy
@@ -87,30 +83,21 @@ def partition_classes(X, y, split_attribute, split_val):
                [2, 'cc', 28],                           0,
                [4, 'cc', 32]]                           1]
                
-    ''' 
-    
-    X_left = []
-    X_right = []
-    
-    y_left = []
-    y_right = []
-
-    if isinstance(split_val, int):
-        for row in X:
-            if row[split_attribute] <= split_val:
-                X_left.append(row)
-                y_left.append(row)
-            else:
-                X_right.append(row)
-                y_left.append(row)
+    '''
+    if type(split_val) == str:
+        f = list(filter(lambda t: t[0][split_attribute] == split_val, zip(X, y)))
+        X_left = [r[0] for r in f]
+        y_left = [r[1] for r in f]
+        f = list(filter(lambda t: t[0][split_attribute] != split_val, zip(X, y)))
+        X_right = [r[0] for r in f]
+        y_right = [r[1] for r in f]
     else:
-        for row in X:
-            if row[split_attribute] == split_val:
-                X_left.append(row)
-                y_left.append(row)
-            else:
-                X_right.append(row)
-                y_left.append(row)
+        f = list(filter(lambda t: t[0][split_attribute] <= split_val, zip(X, y)))
+        X_left = [r[0] for r in f]
+        y_left = [r[1] for r in f]
+        f = list(filter(lambda t: t[0][split_attribute] > split_val, zip(X, y)))
+        X_right = [r[0] for r in f]
+        y_right = [r[1] for r in f]
     
     return X_left, X_right, y_left, y_right
 
@@ -134,16 +121,33 @@ def information_gain(previous_y, current_y):
     
     info_gain = 0.45915
     """
-
     hp = entropy(previous_y)
     totallen = len(previous_y)
     llen = len(current_y[0])
     rlen = len(current_y[1])
-    hn = (entropy(current_y[0]) * (llen / float(totallen))) + (entropy(current_y[1]) * (rlen / float(totallen)))
+    hn = (entropy(current_y[0]) * (llen / totallen)) + (entropy(current_y[1]) * (rlen / totallen))
 
     info_gain = hp - hn
 
     return info_gain
+
+
+# if __name__ == '__main__':
+#     print("test")
+#     e = entropy([0,0,0,1,1,1,1,1,1])
+#     re = 0.92
+#     print("Entropy: {} (error={})".format(round(re, 2) == round(e, 2), e - re))
+#     g = information_gain([0,0,0,1,1,1], [[0,0], [1,1,1,0]])
+#     rg = 0.45915
+#     print("Gain: {} (error={})".format(round(rg, 5) == round(g, 5), g - rg))
+#     x = [[3, 'aa', 10],
+#          [1, 'bb', 22],
+#          [2, 'cc', 28],
+#          [5, 'bb', 32],
+#          [4, 'cc', 32]]
+#     y = [1, 1, 0, 0, 1]
+#     print(partition_classes(x, y, 0, 3))
+#     print(partition_classes(x, y, 1, 'bb'))
 
 
 

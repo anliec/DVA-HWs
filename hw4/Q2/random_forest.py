@@ -25,6 +25,7 @@ Do NOT change the signature of the given functions.
 Do NOT change any part of the main function APART from the forest_size parameter.  
 """
 
+
 class RandomForest(object):
     num_trees = 0
     decision_trees = []
@@ -42,7 +43,7 @@ class RandomForest(object):
         # Initialization done here
         self.num_trees = num_trees
         self.decision_trees = [DecisionTree() for i in range(num_trees)]
-
+        self.bootstraps_dataset_col_filter = []
 
     def _bootstrapping(self, XX, n):
         # Reference: https://en.wikipedia.org/wiki/Bootstrapping_(statistics)
@@ -52,23 +53,38 @@ class RandomForest(object):
         # Note that you would also need to record the corresponding class labels
         # for the sampled records for training purposes.
         i = np.random.choice(len(XX), n, replace=True)
-        return XX[:-1, i], XX[-1, i]
-
+        num_features = len(XX[0])-1
+        num_features_sample = int(np.ceil(np.sqrt(num_features)))
+        f = sorted(np.random.choice(num_features, num_features_sample, replace=False))
+        # f = list(range(num_features))
+        self.bootstraps_dataset_col_filter.append(f)
+        x = []
+        for r in i:
+            row = []
+            for y in f:
+                row.append(XX[r][y])
+            x.append(row)
+        return x, [XX[r][-1] for r in i]
 
     def bootstrapping(self, XX):
         # Initializing the bootstap datasets for each tree
-        for i in range(self.num_trees):
+        for tree in self.decision_trees:
             data_sample, data_label = self._bootstrapping(XX, len(XX))
             self.bootstraps_datasets.append(data_sample)
             self.bootstraps_labels.append(data_label)
-
+            tree.raw_to_partial_col = self.bootstraps_dataset_col_filter[-1]
 
     def fitting(self):
         # TODO: Train `num_trees` decision trees using the bootstraps datasets
         # and labels by calling the learn function from your DecisionTree class.
-        self.decision_trees = [DecisionTree() for i in range(self.num_trees)]
-        [t.learn(d, l) for t, d, l in zip(self.decision_trees, self.bootstraps_datasets, self.bootstraps_labels)]
-
+        try:
+            import multiprocessing
+            pool = multiprocessing.Pool()
+            self.decision_trees = pool.map(train_tree,
+                                           zip(self.decision_trees, self.bootstraps_datasets, self.bootstraps_labels)
+                                           )
+        except ImportError:
+            [t.learn(x, y) for t, x, y in zip(self.decision_trees, self.bootstraps_datasets, self.bootstraps_labels)]
 
     def voting(self, X):
         y = []
@@ -87,18 +103,25 @@ class RandomForest(object):
                     effective_vote = OOB_tree.classify(record)
                     votes.append(effective_vote)
 
-
             counts = np.bincount(votes)
             
             if len(counts) == 0:
                 # TODO: Special case 
                 #  Handle the case where the record is not an out-of-bag sample
-                #  for any of the trees. 
-                pass
+                #  for any of the trees.
+                votes = [t.classify(record) for t in self.decision_trees]
+                y.append(np.bincount(votes).argmax())
             else:
-                y = np.append(y, np.argmax(counts))
+                y.append(np.argmax(counts))
 
-        return y
+        return np.array(y)
+
+
+def train_tree(args):
+    tree, x, y = args
+    tree.learn(x, y)
+    return tree
+
 
 # DO NOT change the main function apart from the forest_size parameter!
 def main():
@@ -124,7 +147,7 @@ def main():
 
     # TODO: Initialize according to your implementation
     # VERY IMPORTANT: Minimum forest_size should be 10
-    forest_size = 10
+    forest_size = 100
     
     # Initializing a random forest.
     randomForest = RandomForest(forest_size)
