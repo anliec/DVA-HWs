@@ -11,8 +11,21 @@ def entropy(class_y):
     #
     # Example:
     #    entropy([0,0,0,1,1,1,1,1,1]) = 0.92
-        
-    entropy = 0
+
+    na = 0
+    nb = 0
+    for i in class_y:
+        if i != 0:
+            na += 1
+        else:
+            nb += 1
+
+    proba = float(na) / float(na + nb)
+    probb = float(nb) / float(na + nb)
+    if proba != 0 and probb != 0:
+        entropy = (-1 * proba * np.log2(proba)) - (probb * np.log2(probb))
+    else:
+        entropy = 0
     return entropy
 
 
@@ -81,8 +94,25 @@ def partition_classes(X, y, split_attribute, split_val):
     
     y_left = []
     y_right = []
+
+    if isinstance(split_val, int):
+        for row in X:
+            if row[split_attribute] <= split_val:
+                X_left.append(row)
+                y_left.append(row)
+            else:
+                X_right.append(row)
+                y_left.append(row)
+    else:
+        for row in X:
+            if row[split_attribute] == split_val:
+                X_left.append(row)
+                y_left.append(row)
+            else:
+                X_right.append(row)
+                y_left.append(row)
     
-    return (X_left, X_right, y_left, y_right)
+    return X_left, X_right, y_left, y_right
 
     
 def information_gain(previous_y, current_y):
@@ -105,8 +135,15 @@ def information_gain(previous_y, current_y):
     info_gain = 0.45915
     """
 
-    info_gain = 0
+    hp = entropy(previous_y)
+    totallen = len(previous_y)
+    llen = len(current_y[0])
+    rlen = len(current_y[1])
+    hn = (entropy(current_y[0]) * (llen / float(totallen))) + (entropy(current_y[1]) * (rlen / float(totallen)))
+
+    info_gain = hp - hn
 
     return info_gain
-    
-    
+
+
+
