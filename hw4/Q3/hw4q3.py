@@ -127,7 +127,7 @@ print("test: {}".format(accuracy_score(y_test, svc.predict(x_test))))
 #       Print the best params, using .best_params_, and print the best score, using .best_score_.
 # XXX
 
-gsvc = GridSearchCV(svc, {'C': [100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001],
+gsvc = GridSearchCV(svc, {'C': [10000.0, 1000.0, 100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001],
                           'kernel': ['linear', 'rbf']},
                     cv=10,
                     n_jobs=-1)
