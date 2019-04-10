@@ -12,7 +12,7 @@ Linear Regression - Training Accuracy: 0.64
 Linear Regression - Testing Accuracy: 0.63
 
 Random Forest - Training Accuracy: 1.00
-Random Forest - Testing Accuracy: 0.90
+Random Forest - Testing Accuracy: 0.89
 
 SVM - Training Accuracy: 0.44
 SVM - Testing Accuracy: 0.46
@@ -24,11 +24,11 @@ Q 3.2 Hyperparameter Tuning
 Random Forest - n_estimators values tested (at least 3): 5, 150, 300, 450, 600, 750
 Random Forest - max_depth values tested (at least 3): 3, 10, 14, 25, 30, 35
 
-Random Forest - Best combination of parameter values - n_estimators: 750
+Random Forest - Best combination of parameter values - n_estimators: 450
 Random Forest - Best combination of parameter values - max_depth: 30
 
-Random Forest - Testing Accuracy before tuning (default parameters): 0.90
-Random Forest - Testing Accuracy after tuning:
+Random Forest - Testing Accuracy before tuning (default parameters): 0.89
+Random Forest - Testing Accuracy after tuning: 0.93
 
 SVM - Kernel Values tested: linear, rbf
 SVM - C values tested (at Least 3): 10000.0, 1000.0, 100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001
@@ -40,8 +40,8 @@ SVM - Best combination of parameter values - C: 10000.0
 Q 3.3
 
 SVM - Highest mean testing/cross-validated accuracy (best score): 
-SVM - Mean train score: 
-SVM Mean fit time: 
+SVM - Mean train score: 0.92
+SVM Mean fit time: 107.78
 
 *********************************************
 
