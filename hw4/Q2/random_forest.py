@@ -52,12 +52,16 @@ class RandomForest(object):
         #       from the original dataset XX.
         # Note that you would also need to record the corresponding class labels
         # for the sampled records for training purposes.
+
+        # choice which row to use
         i = np.random.choice(len(XX), n, replace=True)
+        # choice which features to use
         num_features = len(XX[0])-1
         num_features_sample = int(np.ceil(np.sqrt(num_features)))
         f = sorted(np.random.choice(num_features, num_features_sample, replace=False))
-        # f = list(range(num_features))
+        # save the used features for that particular set
         self.bootstraps_dataset_col_filter.append(f)
+        # generate the actual data table from the previous values (not optimized, but not the bottleneck)
         x = []
         for r in i:
             row = []
@@ -78,12 +82,14 @@ class RandomForest(object):
         # TODO: Train `num_trees` decision trees using the bootstraps datasets
         # and labels by calling the learn function from your DecisionTree class.
         try:
+            # try to speed up that time consuming process by taking advantage of multiprocessing
             import multiprocessing
             pool = multiprocessing.Pool()
             self.decision_trees = pool.map(train_tree,
                                            zip(self.decision_trees, self.bootstraps_datasets, self.bootstraps_labels)
                                            )
         except ImportError:
+            # if multiprocessing (it's in std, but still) just use a fast list comprehension instead
             [t.learn(x, y) for t, x, y in zip(self.decision_trees, self.bootstraps_datasets, self.bootstraps_labels)]
 
     def voting(self, X):
@@ -94,7 +100,7 @@ class RandomForest(object):
             #   1. Find the set of trees that consider the record as an 
             #      out-of-bag sample.
             #   2. Predict the label using each of the above found trees.
-            #   3. Use majority vote to find the final label for this recod.
+            #   3. Use majority vote to find the final label for this record.
             votes = []
             for i in range(len(self.bootstraps_datasets)):
                 dataset = self.bootstraps_datasets[i]
@@ -106,9 +112,8 @@ class RandomForest(object):
             counts = np.bincount(votes)
             
             if len(counts) == 0:
-                # TODO: Special case 
-                #  Handle the case where the record is not an out-of-bag sample
-                #  for any of the trees.
+                # If all the tree have that sample in their training, we still make them all vote and get the over-fit
+                # results (That's the problem with out of bag estimate)
                 votes = [t.classify(record) for t in self.decision_trees]
                 y.append(np.bincount(votes).argmax())
             else:
