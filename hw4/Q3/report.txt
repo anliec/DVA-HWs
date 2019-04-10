@@ -8,32 +8,32 @@
 **********************************************
 Q 3.1
 
-Linear Regression - Training Accuracy: 
-Linear Regression - Testing Accuracy: 
+Linear Regression - Training Accuracy: 0.64
+Linear Regression - Testing Accuracy: 0.63
 
-Random Forest - Training Accuracy: 
-Random Forest - Testing Accuracy: 
+Random Forest - Training Accuracy: 1.00
+Random Forest - Testing Accuracy: 0.90
 
-SVM - Training Accuracy: 
-SVM - Testing Accuracy: 
+SVM - Training Accuracy: 0.44
+SVM - Testing Accuracy: 0.46
 
 **********************************************
 
 Q 3.2 Hyperparameter Tuning
 
-Random Forest - n_estimators values tested (at least 3): 
-Random Forest - max_depth values tested (at least 3): 
+Random Forest - n_estimators values tested (at least 3): 5, 150, 300, 450, 600, 750
+Random Forest - max_depth values tested (at least 3): 3, 10, 14, 25, 30, 35
 
-Random Forest - Best combination of parameter values - n_estimators: 
-Random Forest - Best combination of parameter values - max_depth: 
+Random Forest - Best combination of parameter values - n_estimators: 750
+Random Forest - Best combination of parameter values - max_depth: 30
 
-Random Forest - Testing Accuracy before tuning (default parameters):
+Random Forest - Testing Accuracy before tuning (default parameters): 0.90
 Random Forest - Testing Accuracy after tuning:
 
-SVM - Kernel Values tested: 
-SVM - C values tested (at Least 3): 
-SVM - Best combination of parameter values - Kernel: 
-SVM - Best combination of parameter values - C: 
+SVM - Kernel Values tested: linear, rbf
+SVM - C values tested (at Least 3): 10000.0, 1000.0, 100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001
+SVM - Best combination of parameter values - Kernel: rbf
+SVM - Best combination of parameter values - C: 10000.0
 
 *********************************************
 
@@ -47,20 +47,22 @@ SVM Mean fit time:
 
 Q 3.4 Feature Importance - WITH THE MODEL TRAINED IN Q 3.1
 
-Random Forest  - Most important feature (e.g. X5): 
-Random Forest  - Least important feature (e.g. X1): 
+Random Forest  - Most important feature (e.g. X5): X7
+Random Forest  - Least important feature (e.g. X1): X9
 
 *********************************************
 
 Q 3.5
 
-Best Classifier and why (in at most 50 words): 
+Best Classifier and why (in at most 50 words): Random forest, because it gets the best accuracy on the test set while
+    being also relatively fast to compute and train. SVM may achieve better accuracy but this require lot of fine tuning
+    of the kernel. On the other hand default parameters for random forest gave already very good results.
 
 *********************************************
 
 Q 3.6 Principal Component Analysis
 
-"PCA - Percentage of variance explained by each of the selected components (enter the entire array as [0.12, …, 0.012])": 
-"PCA - Singular values corresponding to each of the selected components (enter the entire array as [0.09, …, 0.037])": 
+"PCA - Percentage of variance explained by each of the selected components (enter the entire array as [0.12, …, 0.012])": [5.72677802e-01, 4.27268657e-01, 3.11931021e-05, 9.07281291e-06, 7.03717546e-06, 1.50247477e-06, 1.39355904e-06, 7.89678691e-07, 6.75276888e-07, 6.14439646e-07]
+"PCA - Singular values corresponding to each of the selected components (enter the entire array as [0.09, …, 0.037])": [886657.01306756, 765862.8376967, 6543.79615045, 3529.16087888, 3108.13353107, 1436.16412213, 1383.13052468, 1041.17969123, 962.81183887, 918.41738083]
 
 *********************************************

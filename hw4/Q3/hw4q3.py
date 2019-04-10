@@ -93,9 +93,7 @@ grf = GridSearchCV(rf, {'n_estimators': [5, 150, 300, 450, 600, 750],
 grf.fit(x_train, y_train)
 
 print("Best param: {}\nBest train score: {}".format(grf.best_params_, grf.best_score_))
-# Best param: {'max_depth': 30, 'n_estimators': 600}
-# Best train score: 0.9266641235933626
-
+print("Best test score: {}".format(accuracy_score(y_test, grf.best_estimator_.predict(x_test))))
 # ############################################ Support Vector Machine ##################################################
 # XXX
 # TODO: Pre-process the data to standardize or normalize it, otherwise the grid search will take much longer
@@ -134,6 +132,11 @@ gsvc = GridSearchCV(svc, {'C': [10000.0, 1000.0, 100.0, 10.0, 1.0, 0.1, 0.01, 0.
 gsvc.fit(x_train_std, y_train)
 
 print("Best param: {}\nBest train score: {}".format(gsvc.best_params_, gsvc.best_score_))
+print("Best test score: {}".format(accuracy_score(y_test, gsvc.best_estimator_.predict(x_test))))
+print(gsvc.cv_results_)
+index_of_best = np.argmin(gsvc.cv_results_['rank_test_score'])
+for k in ['mean_train_score', 'mean_test_score', 'mean_fit_time', 'rank_test_score']:
+    print("{}: {}".format(k, gsvc.cv_results_[k][index_of_best]))
 
 # ######################################### Principal Component Analysis ###############################################
 # XXX
