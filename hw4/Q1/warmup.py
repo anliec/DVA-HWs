@@ -45,7 +45,7 @@ the first value in the pair is stored in 'int' C type and the second in 'float' 
 Modify the value of the num_bytes variable appropriately in order to accomplish this.
 """
 def get_memory_map_from_binary_file(file_name):
-    num_bytes = ((128-4) // 5) * 8  # ~~~ MODIFY THIS LINE (ii) ~~~
+    num_bytes = (128 // 5) * 8  # ~~~ MODIFY THIS LINE (ii) ~~~
 
     with open(file_name, "r") as file_object:
         file_map = mmap.mmap(
@@ -88,7 +88,7 @@ each of which tuple contains 1 integer and 1 float value.
 def parse_memory_map(file_map):
     parsed_values = []
 
-    for i in range((128 - 4) // 5):  # ~~~ MODIFY THIS LINE (iii) ~~~
+    for i in range(128 // 5):  # ~~~ MODIFY THIS LINE (iii) ~~~
         parsed_values.append(
             unpack("<ff", file_map[i * 8: i * 8 + 8]))  # ~~~ MODIFY THIS LINE (iv) ~~~
 
