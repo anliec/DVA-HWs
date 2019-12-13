@@ -1,0 +1,16 @@
+
+*.zip
+*DS_Store*
+*~
+*.old
+.idea
+__pycache__
+*.out
+*.7z
+*.gz
+*.bin
+*.txt
+*.csv
+*.crc
+*.tsv
+.ipynb_checkpoints
